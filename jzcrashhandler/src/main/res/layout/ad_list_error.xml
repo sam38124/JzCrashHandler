@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="50dp">
+
+    <TextView
+            android:text="崩潰時間:2019:11:22"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/textView3" android:gravity="left|center_vertical"
+            android:textColor="@android:color/holo_red_dark" android:padding="5dp"/>
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp" android:id="@+id/view" android:layout_alignParentBottom="true"
+            android:background="@android:color/darker_gray"/>
+</RelativeLayout>
