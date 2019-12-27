@@ -42,15 +42,18 @@ implementation 'com.github.sam38124: JzCrashHandler:1.0'
 ## 快速使用
 
 ### 於Application中添加你的崩潰處理方式 
-```kotlin
-/*MainActivity::class.java為你要重新起動app的進入點*/
 
-//1.崩潰後自動重啟
+#### 1.崩潰後儲存崩潰紀錄並且自動重啟app
+```kotlin
 CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.RESTART)
-//2.崩潰後顯示Log紀錄檔
+```
+#### 2.崩潰後顯示Log紀錄檔
+```kotlin
 CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.SHOW_CRASH_MESSAGE)
-//3.崩潰後上傳Log紀錄檔
-CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.UPLOAD_CRASH_MESSAGE)
+```
+#### 3.崩潰後上傳Log紀錄檔至[JzCustomDebug](https://github.com/sam38124/JzCustomDebug)線上除錯系統
+```kotlin
+CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.RESTART)
 ```
 ### 其他 
 ```kotlin
