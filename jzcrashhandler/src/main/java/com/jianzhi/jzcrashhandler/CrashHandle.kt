@@ -2,12 +2,19 @@ package com.jianzhi.jzcrashhandler
 
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Handler
 import android.util.Log
+import com.jianzhi.jzcrashhandler.Post_Server.post
 import com.jzsql.lib.mmySql.ItemDAO
+import com.jzsql.lib.mmySql.Sql_Result
 import java.io.PrintStream
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 class CrashHandle(var app: Application, var startpage: Class<*>?) {
@@ -16,7 +23,13 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         val RESTART = 2
         val UPLOAD_CRASH_MESSAGE = 3
         var CrashHandle: CrashHandle? = null
+        var appname = ""
+        var timer = Timer()
         fun newInstance(app: Application, startpage: Class<*>?): CrashHandle {
+            Log.e("CrashHandle", "註冊包名:" + app.packageName)
+            Log.e("CrashHandle", "MAKE:" + Build.MANUFACTURER)
+            Log.e("CrashHandle", "MODEL:" + Build.MODEL)
+            appname = app.packageName
             if (CrashHandle == null) {
                 CrashHandle = CrashHandle(app, startpage)
             }
@@ -28,6 +41,7 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         }
     }
 
+    var handler = Handler()
     fun ReadLog() {
         restartApp(Act_Show_Error::class.java)
     }
@@ -49,16 +63,19 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         ex.printStackTrace(pw)
         Log.e("error:", "error\n${sw}")
         try {
-            val base = ItemDAO(app, "crash.db")
-            base.ExSql(
-                "CREATE TABLE IF NOT EXISTS crash (\n" +
-                        " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                        " data VARCHAR NOT NULL,\n" +
-                        "time TIME" +
-                        ");\n"
-            )
-            base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
-            base.close()
+            if (selection == SHOW_CRASH_MESSAGE || selection == RESTART) {
+                val base = ItemDAO(app, "crash.db")
+                base.ExSql(
+                    "CREATE TABLE IF NOT EXISTS crash (\n" +
+                                    " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                                    " data VARCHAR NOT NULL,\n" +
+                                    "time TIME ," +
+                                    "uploader INT DEFAULT 0" +
+                                    ");\n"
+                )
+                base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
+                base.close()
+            }
             when (selection) {
                 SHOW_CRASH_MESSAGE -> {
                     restartApp(Act_Show_Error::class.java)
@@ -67,7 +84,27 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                     restartApp(startpage)
                 }
                 UPLOAD_CRASH_MESSAGE -> {
-
+                    Thread {
+                        if (!post("/topics/${appname}", "Make:${Build.MANUFACTURER}\nModel:${Build.MODEL}", "$sw")) {
+                            val base = ItemDAO(app, "crash.db")
+                            base.ExSql(
+                                "CREATE TABLE IF NOT EXISTS crash (\n" +
+                                    " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                                    " data VARCHAR NOT NULL,\n" +
+                                    "time TIME ," +
+                                    "uploader INT DEFAULT 0" +
+                                    ");\n"
+                            )
+                            base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
+                            base.close()
+                        };
+                    }.start()
+                    try {
+                        Thread.sleep(2000)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    restartApp(startpage)
                 }
             }
         } catch (e: Exception) {
@@ -78,6 +115,38 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
     fun SetUp(a: Int) {
         selection = a
         Thread.setDefaultUncaughtExceptionHandler(restartHandler);
+        if (selection == UPLOAD_CRASH_MESSAGE) {
+            Thread {
+                try {
+                    while (true) {
+                        Thread.sleep(10000)
+                        val base = ItemDAO(app, "crash.db")
+                        base.ExSql(
+                            "CREATE TABLE IF NOT EXISTS crash (\n" +
+                                    " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                                    " data VARCHAR NOT NULL,\n" +
+                                    "time TIME ," +
+                                    "uploader INT DEFAULT 0" +
+                                    ");\n"
+                        )
+                        base.Query("select * from `crash` where uploader=0", Sql_Result {
+                            if (it.getInt(3) == 0) {
+                                if (post(
+                                        "/topics/${appname}",
+                                        "Make:${Build.MANUFACTURER}\nModel:${Build.MODEL}",
+                                        "${it.getString(1)}"
+                                    )
+                                ) {
+                                    base.ExSql("update `crash` set `uploader`=1 where id=${it.getString(0)}")
+                                }
+                            }
+                        })
+                    }
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }.start()
+        }
     }
 
     fun restartApp(srartpage: Class<*>?) {
@@ -92,8 +161,6 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         val sdFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
 
         val date = java.util.Date()
-
-//System.out.println(strDate);
 
         return sdFormat.format(date)
 

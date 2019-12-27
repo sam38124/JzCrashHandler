@@ -27,10 +27,11 @@ class Errorfrage : Fragment() {
            val base = ItemDAO(activity!!, "crash.db")
         base.ExSql(
             "CREATE TABLE IF NOT EXISTS crash (\n" +
-                    " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                    " data VARCHAR NOT NULL,\n" +
-                    "time TIME" +
-                    ");\n"
+                                    " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                                    " data VARCHAR NOT NULL,\n" +
+                                    "time TIME ," +
+                                    "uploader INT DEFAULT 0" +
+                                    ");\n"
         )
             base.Query("select * from crash order by id desc", Sql_Result {
                 id.add(it.getString(0))
