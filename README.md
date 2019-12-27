@@ -53,7 +53,7 @@ CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.SHOW_CR
 ```
 #### 3.崩潰後上傳Log紀錄檔至[JzCustomDebug](https://github.com/sam38124/JzCustomDebug)線上除錯系統
 ```kotlin
-CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.RESTART)
+CrashHandle.newInstance(this,MainActivity::class.java).SetUp(UPLOAD_CRASH_MESSAGE)
 ```
 ### 其他 
 ```kotlin
