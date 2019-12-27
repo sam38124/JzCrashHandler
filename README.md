@@ -2,7 +2,7 @@
 [![Platform](https://img.shields.io/badge/平台-%20Android%20-brightgreen.svg)](https://github.com/sam38124)
 [![characteristic](https://img.shields.io/badge/特點-%20輕量級%20%7C%20簡單易用%20%20%7C%20穩定%20-brightgreen.svg)](https://github.com/sam38124)
 # JzCrashHandler
-### <br> 最近請測試工程師做黑箱測試時，偶爾會遇到崩潰的問題，因為發生的機率不高，很難模擬出崩潰的原因，所以自行開發一個崩潰處理框架，整體代碼十分簡單，只要於Application添加一行程式碼即可．
+### <br> 最近請測試工程師做黑箱測試時，偶爾會遇到崩潰的問題，因為發生的機率不高，很難模擬出崩潰的原因，所以自行開發一個崩潰處理框架，儲存崩潰紀錄於本地，或者上傳至雲端，整體代碼十分簡單，只要於Application添加一行程式碼即可．
 
 #### 顯示本地崩潰紀錄
 
