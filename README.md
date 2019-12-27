@@ -4,11 +4,11 @@
 # JzCrashHandler
 ### <br> 最近請測試工程師做黑箱測試時，偶爾會遇到崩潰的問題，因為發生的機率不高，很難模擬出崩潰的原因，所以自行開發一個崩潰處理框架，整體代碼十分簡單，只要於Application添加一行程式碼即可．
 
-### 顯示本地崩潰紀錄
+#### 顯示本地崩潰紀錄
 
 <img src="https://github.com/sam38124/JzCrashHandler/blob/master/IMG_mdny8p.gif" width = "200"  alt="i5" /> 
 
-### 搭配[JzCustomDebug](https://github.com/sam38124/JzCustomDebug)線上除錯系統
+#### 搭配[JzCustomDebug](https://github.com/sam38124/JzCustomDebug)線上除錯系統
 
 <img src="https://github.com/sam38124/JzCustomDebug/blob/master/i1.png" width = "200"  alt="i1" />  <img src="https://github.com/sam38124/JzCustomDebug/blob/master/i2.png" width = "200"  alt="i2" />  <img src="https://github.com/sam38124/JzCustomDebug/blob/master/i3.png" width = "200"  alt="i3" />
 
