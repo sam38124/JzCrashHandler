@@ -57,9 +57,9 @@ CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.UPLOAD_
 ```
 ### 其他 
 ```kotlin
-CrashHandle.getInstance().ReadLog()//讀取崩潰紀錄
+CrashHandle.getInstance().ReadLog()//讀取本地崩潰紀錄
 
-CrashHandle.getInstance().DeltetRecord()//刪除崩潰紀錄
+CrashHandle.getInstance().DeltetRecord()//刪除本地崩潰紀錄
 ```
 <a name="About"></a>
 ### 關於我
