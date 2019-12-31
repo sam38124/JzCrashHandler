@@ -73,6 +73,11 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
                 )
+                base.Query("select count(1) from `crash`", Sql_Result {
+                    if(it.getInt(0)>10){
+                        base.ExSql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
+                    }
+                })
                 base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
                 base.close()
             }
@@ -95,6 +100,11 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
                             )
+                            base.Query("select count(1) from `crash`", Sql_Result {
+                                if(it.getInt(0)>10){
+                                    base.ExSql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
+                                }
+                            })
                             base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
                             base.close()
                         };
