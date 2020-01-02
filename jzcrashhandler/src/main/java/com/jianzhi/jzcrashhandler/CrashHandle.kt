@@ -151,6 +151,7 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                 }
                             }
                         })
+                        base.close()
                     }
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
