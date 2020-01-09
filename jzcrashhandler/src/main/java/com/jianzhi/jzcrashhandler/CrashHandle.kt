@@ -2,6 +2,7 @@ package com.jianzhi.jzcrashhandler
 
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
@@ -28,7 +29,12 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         fun newInstance(app: Application, startpage: Class<*>?): CrashHandle {
             Log.e("CrashHandle", "註冊包名:" + app.packageName)
             Log.e("CrashHandle", "MAKE:" + Build.MANUFACTURER)
-            Log.e("CrashHandle", "MODEL:" + Build.MODEL)
+            var pi = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_ACTIVITIES);
+            if (pi != null) {
+                Log.e("CrashHandle:","versionName:"+pi.versionName)
+                Log.e("CrashHandle:","versionCode:"+pi.versionCode)
+                Log.e("CrashHandle:","SDK_INT:"+ Build.VERSION.SDK_INT)
+            }
             appname = app.packageName
             if (CrashHandle == null) {
                 CrashHandle = CrashHandle(app, startpage)
@@ -38,7 +44,8 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
 
         fun getInstance(): CrashHandle {
             return CrashHandle!!
-        }
+
+                    }
     }
 
     var handler = Handler()
@@ -90,7 +97,15 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                 }
                 UPLOAD_CRASH_MESSAGE -> {
                     Thread {
-                        if (!post("/topics/${appname}", "Make:${Build.MANUFACTURER}\nModel:${Build.MODEL}", "$sw")) {
+                        var temp="Make:${Build.MANUFACTURER}\n" +
+                                "Model:${Build.MODEL}\n"
+                        val pi = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_ACTIVITIES);
+                        if (pi != null) {
+                            temp=temp+"VERSION_NAME:"+pi.versionName+"\n"
+                            temp=temp+"VERSION_CODE:"+pi.versionCode+"\n"
+                            temp=temp+"SDK_INT:"+ Build.VERSION.SDK_INT+"\n"
+                        }
+                        if (!post("/topics/${appname}", temp, "$sw")) {
                             val base = ItemDAO(app, "crash.db")
                             base.ExSql(
                                 "CREATE TABLE IF NOT EXISTS crash (\n" +
@@ -141,9 +156,17 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                         )
                         base.Query("select * from `crash` where uploader=0", Sql_Result {
                             if (it.getInt(3) == 0) {
+                                var temp="Make:${Build.MANUFACTURER}\n" +
+                                        "Model:${Build.MODEL}\n"
+                                val pi = app.packageManager.getPackageInfo(app.packageName, PackageManager.GET_ACTIVITIES);
+                                if (pi != null) {
+                                    temp=temp+"VERSION_NAME:"+pi.versionName+"\n"
+                                    temp=temp+"VERSION_CODE:"+pi.versionCode+"\n"
+                                    temp=temp+"SDK_INT:"+ Build.VERSION.SDK_INT+"\n"
+                                }
                                 if (post(
                                         "/topics/${appname}",
-                                        "Make:${Build.MANUFACTURER}\nModel:${Build.MODEL}",
+                                        temp,
                                         "${it.getString(1)}"
                                     )
                                 ) {
