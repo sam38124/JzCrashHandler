@@ -42,11 +42,11 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
     }
 
     var handler = Handler()
-    fun ReadLog() {
+    fun readLog() {
         restartApp(Act_Show_Error::class.java)
     }
 
-    fun DeltetRecord() {
+    fun deleteRecord() {
         try {
             val base = ItemDAO(app, "crash.db")
             base.ExSql("drop table  `crash`")
@@ -122,7 +122,7 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         }
     }
 
-    fun SetUp(a: Int) {
+    fun setUP(a: Int) {
         selection = a
         Thread.setDefaultUncaughtExceptionHandler(restartHandler);
         if (selection == UPLOAD_CRASH_MESSAGE) {

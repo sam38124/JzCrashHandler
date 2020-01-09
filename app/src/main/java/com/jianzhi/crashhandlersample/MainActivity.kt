@@ -20,10 +20,10 @@ lateinit var text:TextView
                 var b= a[2];
             }
             R.id.read->{
-                CrashHandle.getInstance().ReadLog()
+                CrashHandle.getInstance().readLog()
             }
             R.id.delete->{
-                CrashHandle.getInstance().DeltetRecord()
+                CrashHandle.getInstance().deleteRecord()
             }
         }
     }

@@ -8,6 +8,6 @@ class Myapp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        CrashHandle.newInstance(this,MainActivity::class.java).SetUp(CrashHandle.RESTART)
+        CrashHandle.newInstance(this,MainActivity::class.java).setUP(CrashHandle.RESTART)
     }
 }
