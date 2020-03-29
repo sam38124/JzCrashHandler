@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.jzsql.lib.mmySql.ItemDAO
+import com.jzsql.lib.mmySql.JzSqlHelper
 import com.jzsql.lib.mmySql.Sql_Result
 import kotlinx.android.synthetic.main.fragment_errorfrage.view.*
 
@@ -24,8 +24,8 @@ class Errorfrage : Fragment() {
         rootview=inflater.inflate(R.layout.fragment_errorfrage, container, false)
         errorlist.clear()
         id.clear()
-           val base = ItemDAO(activity!!, "crash.db")
-        base.ExSql(
+           val base = JzSqlHelper(activity!!, "crash.db")
+        base.exsql(
             "CREATE TABLE IF NOT EXISTS crash (\n" +
                                     " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                                     " data VARCHAR NOT NULL,\n" +
@@ -33,7 +33,7 @@ class Errorfrage : Fragment() {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
         )
-            base.Query("select * from crash order by id desc", Sql_Result {
+            base.query("select * from crash order by id desc", Sql_Result {
                 id.add(it.getString(0))
                 errorlist.add(it.getString(2))
             })

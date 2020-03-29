@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.Handler
 import android.util.Log
 import com.jianzhi.jzcrashhandler.Post_Server.post
-import com.jzsql.lib.mmySql.ItemDAO
+import com.jzsql.lib.mmySql.JzSqlHelper
 import com.jzsql.lib.mmySql.Sql_Result
 import java.io.PrintStream
 import java.io.PrintWriter
@@ -55,8 +55,8 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
 
     fun deleteRecord() {
         try {
-            val base = ItemDAO(app, "crash.db")
-            base.ExSql("drop table  `crash`")
+            val base = JzSqlHelper(app, "crash.db")
+            base.exsql("drop table  `crash`")
             base.close()
         } catch (E: java.lang.Exception) {
             E.printStackTrace()
@@ -71,8 +71,8 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
         Log.e("error:", "error\n${sw}")
         try {
             if (selection == SHOW_CRASH_MESSAGE || selection == RESTART) {
-                val base = ItemDAO(app, "crash.db")
-                base.ExSql(
+                val base = JzSqlHelper(app, "crash.db")
+                base.exsql(
                     "CREATE TABLE IF NOT EXISTS crash (\n" +
                                     " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                                     " data VARCHAR NOT NULL,\n" +
@@ -80,12 +80,12 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
                 )
-                base.Query("select count(1) from `crash`", Sql_Result {
+                base.query("select count(1) from `crash`", Sql_Result {
                     if(it.getInt(0)>10){
-                        base.ExSql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
+                        base.exsql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
                     }
                 })
-                base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
+                base.exsql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
                 base.close()
             }
             when (selection) {
@@ -106,8 +106,8 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                             temp=temp+"SDK_INT:"+ Build.VERSION.SDK_INT+"\n"
                         }
                         if (!post("/topics/${appname}", temp, "$sw")) {
-                            val base = ItemDAO(app, "crash.db")
-                            base.ExSql(
+                            val base = JzSqlHelper(app, "crash.db")
+                            base.exsql(
                                 "CREATE TABLE IF NOT EXISTS crash (\n" +
                                     " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                                     " data VARCHAR NOT NULL,\n" +
@@ -115,12 +115,12 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
                             )
-                            base.Query("select count(1) from `crash`", Sql_Result {
+                            base.query("select count(1) from `crash`", Sql_Result {
                                 if(it.getInt(0)>10){
-                                    base.ExSql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
+                                    base.exsql("delete from `crash` where id in(select id from `crash` limit (select count(1) from `crash`)-10)")
                                 }
                             })
-                            base.ExSql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
+                            base.exsql("insert into `crash` (data,time) values ('${sw}','${getDateTime()}')")
                             base.close()
                         };
                     }.start()
@@ -145,8 +145,8 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                 try {
                     while (true) {
                         Thread.sleep(10000)
-                        val base = ItemDAO(app, "crash.db")
-                        base.ExSql(
+                        val base = JzSqlHelper(app, "crash.db")
+                        base.exsql(
                             "CREATE TABLE IF NOT EXISTS crash (\n" +
                                     " id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                                     " data VARCHAR NOT NULL,\n" +
@@ -154,7 +154,7 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                     "uploader INT DEFAULT 0" +
                                     ");\n"
                         )
-                        base.Query("select * from `crash` where uploader=0", Sql_Result {
+                        base.query("select * from `crash` where uploader=0", Sql_Result {
                             if (it.getInt(3) == 0) {
                                 var temp="Make:${Build.MANUFACTURER}\n" +
                                         "Model:${Build.MODEL}\n"
@@ -170,7 +170,7 @@ class CrashHandle(var app: Application, var startpage: Class<*>?) {
                                         "${it.getString(1)}"
                                     )
                                 ) {
-                                    base.ExSql("update `crash` set `uploader`=1 where id=${it.getString(0)}")
+                                    base.exsql("update `crash` set `uploader`=1 where id=${it.getString(0)}")
                                 }
                             }
                         })
